@@ -1,8 +1,8 @@
 import React from 'react'
-import { View, TouchableOpacity } from 'react-native'
+import { View, TouchableOpacity, Text } from 'react-native'
 import { FontAwesome, Entypo } from '@expo/vector-icons'
 
-export default function UdaciStepper({ max, unit, step, value, onIncrement, onDecrement}) {
+export default function UdaciSteppers({ max, unit, step, value, onIncrement, onDecrement}) {
     return(
         <View>
             <TouchableOpacity onPress={onDecrement}>

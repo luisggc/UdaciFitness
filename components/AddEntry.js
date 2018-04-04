@@ -1,95 +1,133 @@
 import React, { Component } from 'react'
 import { View, TouchableOpacity, Text } from 'react-native'
-import { getMetricMetaInfo, timeToString } from '../utils/helpers'
+import { getMetricMetaInfo, timeToString, getDailyReminder } from '../utils/helpers'
 import UdaciSlider from './UdaciSlider'
-import UdaciStepper from './UdaciStepper'
+import UdaciSteppers from './UdaciSteppers'
 import DateHeader from './DateHeader'
+import { Ionicons } from '@expo/vector-icons'
+import TextButton from './TextButton'
+import { submitEntry, removeEntry } from '../utils/api'
+import { connect } from 'react-redux'
+import { addEntry } from '../actions'
 
 function SubmitBtn ({ onPress }) {
     return (
-        <TouchableOpacity
-            onPress={onPress}>
-            <Text>Submit</Text>
+        <TouchableOpacity onPress={onPress}>
+            <Text>Send</Text>
         </TouchableOpacity>
     )
 }
+class AddEntry extends Component {
 
-export default class AddEntry extends Component {
-    state = {
-        run: 0,
-        bike: 0,
-        swim: 0,
-        sleep: 0,
-        eat: 0
+  defaultState = {
+    run: 0,
+    bike: 0,
+    swim: 0,
+    sleep: 0,
+    eat: 0,
+  }
+
+  state = {
+    run: 0,
+    bike: 0,
+    swim: 0,
+    sleep: 0,
+    eat: 0,
+  }
+
+  increment = (metric) => {
+    const { max, step } = getMetricMetaInfo(metric)
+    this.setState((state) => {
+      const count = state[metric] + step
+      return {
+        ...state,
+        [metric]: count > max ? max : count,
+      }
+    })
+  }
+
+  decrement = (metric) => {
+    this.setState((state) => {
+      const count = state[metric] - getMetricMetaInfo(metric).step
+      return {
+        ...state,
+        [metric]: count < 0 ? 0 : count,
+      }
+    })
+  }
+
+  slide = (metric, value) => {
+    this.setState(() => ({
+      [metric]: value
+    }))
+  }
+
+  submit = () => {
+      const key = timeToString()
+      const entry = this.state
+      this.props.dispatch(addEntry({[key]:entry}))
+      submitEntry({key,entry})
+      this.setState(() => (this.defaultState))
+  }
+
+  reset = () => {
+    const key = timeToString()
+    this.setState(() => (this.defaultState))
+      this.props.dispatch(addEntry({
+        [key]:getDailyReminder()
+      }))
+      removeEntry(key)
+  }
+  render() {
+    console.log(this.props)
+    if(this.props.alreadyLogged){
+        return(
+            <View>
+                <Ionicons name='ios-happy-outline' size={100}/>
+                <Text>You already logged</Text>
+                <TextButton onPress={this.reset}>
+                  Reset
+                </TextButton>
+            </View>
+        )
     }
-    increment = (metric) => {
-        const { max, step } = getMetricMetaInfo(metric)
-        this.setState((state) => {
-            const count = state[metric] + step
-            return {
-                ...state,
-                [metric]: count > max ? max : count
-            }
-        })
-    }
-    decrement = (metric) => {
-        const { step } = getMetricMetaInfo(metric)
-        this.setState((state) => {
-            const count = state[metric] - step
-            return {
-                ...state,
-                [metric]: count < 0 ? 0 : count
-            }
-        })
-    }
-    slider = (metric, value) => {
-        this.setState(()=>({
-            [metric] : value
-        }))
-    }
-    submit = () => {
-        const key = timeToString()
-        const entry = this.state
-        this.setState({
-            run: 0,
-            bike: 0,
-            swim: 0,
-            sleep: 0,
-            eat: 0
-        })
-        //Update Redux
-        //Navigate Home
-        //Save to DB
-        //Clear local notification
-    }
-    render() {
     const metaInfo = getMetricMetaInfo()
     return (
       <View>
-          <DateHeader date={(new Date()).toLocaleDateString()} />
-          {Object.keys(metaInfo).map(key => {
-              const { getIcon, type, ...rest} = metaInfo.key
-              const value = this.state[key]
-              return (
-                    <View key={key}>
-                        {getIcon()}
-                      {type === 'slidder'
-                        ? <UdaciSlider 
-                                value={value}
-                                onChange={(value) => this.slider(key, value)}
-                                {...rest} 
-                            />
-                        : <UdaciStepper 
-                                value={value}
-                                onIncrement={() => this.increment(key)}
-                                onDecrement={() => this.decrement(key)}
-                                {...rest}
-                        />}
-                    </View>
-              )
-          })}
-          <SubmitBtn onPress={this.submit}/>
+        <DateHeader date={(new Date()).toLocaleDateString()}/>
+        {Object.keys(metaInfo).map((key) => {
+          const { getIcon, type, ...rest } = metaInfo[key]
+          const value = this.state[key]
+
+          return (
+            <View key={key}>
+              {getIcon()}
+              {type === 'slider'
+                ? <UdaciSlider
+                    value={value}
+                    onChange={(value) => this.slide(key, value)}
+                    {...rest}
+                  />
+                : <UdaciSteppers
+                    value={value}
+                    onIncrement={() => this.increment(key)}
+                    onDecrement={() => this.decrement(key)}
+                    {...rest}
+                  />}
+            </View>
+          )
+        })}
+        <SubmitBtn onPress={this.submit} />
       </View>
     )
   }
 }
+
+function mapStateToProps(state) {
+  const key = timeToString()
+  return {
+    alreadyLogged: state[key] && typeof state[key].today === 'undefined' 
+  }
+}
+
+export default connect(mapStateToProps)(AddEntry)
