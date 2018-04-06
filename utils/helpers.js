@@ -1,8 +1,20 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons'
-//import { white } from './colors'
-const white='#000'
+import { white, red, orange, blue, lightPurp, pink } from './colors'
+
+const styles = StyleSheet.create({
+  container: {flex: 1},
+  iconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 8,
+    backgroundColor : red,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
+})
+
 export function getMetricMetaInfo (metric) {
   const info = {
     run: {
@@ -13,7 +25,7 @@ export function getMetricMetaInfo (metric) {
       type: 'steppers',
       getIcon() {
         return (
-          <View>
+          <View style={[styles.iconContainer, {backgroundColor: red}]} >
             <MaterialIcons
               name='directions-run'
               color={white}
@@ -31,7 +43,7 @@ export function getMetricMetaInfo (metric) {
       type: 'steppers',
       getIcon() {
         return (
-          <View>
+          <View style={[styles.iconContainer,{backgroundColor:pink}]} >
             <MaterialCommunityIcons
               name='bike'
               color={white}
@@ -49,7 +61,7 @@ export function getMetricMetaInfo (metric) {
       type: 'steppers',
       getIcon() {
         return (
-          <View>
+          <View style={[styles.iconContainer,{backgroundColor:orange}]} >
             <MaterialCommunityIcons
               name='swim'
               color={white}
@@ -67,7 +79,7 @@ export function getMetricMetaInfo (metric) {
       type: 'slider',
       getIcon() {
         return (
-          <View>
+          <View style={[styles.iconContainer,{backgroundColor:blue}]} >
             <FontAwesome
               name='bed'
               color={white}
@@ -85,7 +97,7 @@ export function getMetricMetaInfo (metric) {
       type: 'slider',
       getIcon() {
         return (
-          <View>
+          <View style={[styles.iconContainer,{backgroundColor:lightPurp}]} >
             <MaterialCommunityIcons
               name='food'
               color={white}
@@ -96,7 +108,6 @@ export function getMetricMetaInfo (metric) {
       }
     },
   }
-
   return typeof metric === 'undefined'
     ? info
     : info[metric]
@@ -134,7 +145,6 @@ export function calculateDirection (heading) {
   } else {
     direction = 'Calculating'
   }
-
   return direction
 }
 

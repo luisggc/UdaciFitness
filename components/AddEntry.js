@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, TouchableOpacity, Text } from 'react-native'
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native'
 import { getMetricMetaInfo, timeToString, getDailyReminder } from '../utils/helpers'
 import UdaciSlider from './UdaciSlider'
 import UdaciSteppers from './UdaciSteppers'
@@ -9,11 +9,12 @@ import TextButton from './TextButton'
 import { submitEntry, removeEntry } from '../utils/api'
 import { connect } from 'react-redux'
 import { addEntry } from '../actions'
-
+import { white, purple, blue } from '../utils/colors'
+  
 function SubmitBtn ({ onPress }) {
     return (
-        <TouchableOpacity onPress={onPress}>
-            <Text>Send</Text>
+        <TouchableOpacity style={styles.btn} onPress={onPress}>
+            <Text style={{fontSize: 20, color: white}} >Send</Text>
         </TouchableOpacity>
     )
 }
@@ -78,14 +79,14 @@ class AddEntry extends Component {
       }))
       removeEntry(key)
   }
+
   render() {
-    console.log(this.props)
     if(this.props.alreadyLogged){
         return(
-            <View>
+            <View style={styles.containerCenter} >
                 <Ionicons name='ios-happy-outline' size={100}/>
-                <Text>You already logged</Text>
-                <TextButton onPress={this.reset}>
+                <Text style={{fontSize: 20 }} > You already logged</Text>
+                <TextButton onPress={this.reset} >
                   Reset
                 </TextButton>
             </View>
@@ -93,14 +94,14 @@ class AddEntry extends Component {
     }
     const metaInfo = getMetricMetaInfo()
     return (
-      <View>
+      <View style={styles.container}>
         <DateHeader date={(new Date()).toLocaleDateString()}/>
         {Object.keys(metaInfo).map((key) => {
           const { getIcon, type, ...rest } = metaInfo[key]
           const value = this.state[key]
 
           return (
-            <View key={key}>
+            <View key={key} style={styles.row} >
               {getIcon()}
               {type === 'slider'
                 ? <UdaciSlider
@@ -129,5 +130,30 @@ function mapStateToProps(state) {
     alreadyLogged: state[key] && typeof state[key].today === 'undefined' 
   }
 }
+
+styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: white
+  },
+  containerCenter: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  row: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  btn:{
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 35,
+    backgroundColor: purple
+  }
+})
 
 export default connect(mapStateToProps)(AddEntry)
