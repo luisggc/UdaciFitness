@@ -154,7 +154,7 @@ export function timeToString (time = Date.now()) {
   return todayUTC.toISOString().split('T')[0]
 }
 
-export function getDailyReminder () {
+export function getDailyReminderValue  () {
   return{
     today: "Don't forget to log your data today!"
   }
