@@ -8,11 +8,11 @@ import { getMetricMetaInfo } from '../utils/helpers';
 function MetricCard ({date, metrics}) {
     return(
         <View style={{paddingBottom: 25}}>
-            <DateHeader date={date}/>
+            { date && <DateHeader date={date}/> }
             {Object.keys(metrics).map((metric) => {
                 const {displayName, unit, getIcon } = getMetricMetaInfo(metric)
                 return (
-                    <View style={styles.containerEntry} key={metric} >
+                    <View style={styles.metric} key={metric} >
                        { getIcon()}
                         <View style={[styles.container, {marginLeft: 20}]}>
                             <Text  style={{fontSize: 23 }}>{displayName}</Text>
@@ -28,21 +28,29 @@ function MetricCard ({date, metrics}) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1
+    metric: {
+      flexDirection: 'row',
+      marginTop: 12
     },
-    containerEntry : {
-        flex: 1,
-        flexDirection: 'row',
-        marginTop: 25,
-        marginHorizontal: 10,
-        alignItems: 'center'
-    },
-    noDataText: {
-        fontSize: 20,
-        paddingVertical: 20
-    }
-})
+  })
+  
+  
+// const styles = StyleSheet.create({
+//     container: {
+//         flex: 1
+//     },
+//     containerEntry : {
+//         flex: 1,
+//         flexDirection: 'row',
+//         marginTop: 20,
+//         marginHorizontal: 10,
+//         alignItems: 'center'
+//     },
+//     noDataText: {
+//         fontSize: 20,
+//         paddingVertical: 20
+//     }
+// })
 
 export default MetricCard
 

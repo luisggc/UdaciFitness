@@ -35,17 +35,16 @@ class History extends Component {
 
     renderItem = ({ today, ...metrics }, formattedDate, key) => (
         
-        <View style={styles.item}>
-            { today
-                ?   this.renderEmptyDate(formattedDate, today)
-                :   <TouchableOpacity onPress={() => this.props.navigation.navigate(
-                    'EntryDetails',
-                    { entryId: key }
-                )}>
-                        <MetricCard date={formattedDate} metrics={metrics} />
-                    </TouchableOpacity>
-                }
-        </View>
+        today
+        ?   this.renderEmptyDate(formattedDate, today)
+        :   <View style={styles.item}>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate(
+                'EntryDetails',
+                { entryId: key }
+            )}>
+                    <MetricCard date={formattedDate} metrics={metrics} />
+                </TouchableOpacity>
+            </View>
       )
 
     renderEmptyDate(formattedDate, text="You didn't log any data on this day.") {
@@ -64,11 +63,14 @@ class History extends Component {
 
         return !this.state.ready ? <AppLoading /> :
         (
+                <View style={{flex:1}}>
                 <UdaciFitnessCalendar
                     items={ entries }
                     renderItem={ this.renderItem }
                     renderEmptyDate={ this.renderEmptyDate }
                 />
+                <Text style={{height:20}} >Made by Luis Coimbra for UdacityProject</Text>
+                </View>
         )
     }
 }

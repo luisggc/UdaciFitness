@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, StatusBar } from 'react-native'
 import AddEntry from './components/AddEntry'
 import History from './components/History'
+import Live from './components/Live'
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import reducer from './reducers'
@@ -9,6 +10,7 @@ import { TabNavigator, StackNavigator } from 'react-navigation'
 import { Constants } from 'expo'
 import { purple, white } from './utils/colors'
 import EntryDetails from  './components/EntryDetails'
+import { setLocalNotification } from './utils/helpers'
 
 const UdaciStatusBar = () => (
     <View style={{ backgroundColor: purple, height: Constants.statusBarHeight }}>
@@ -17,17 +19,37 @@ const UdaciStatusBar = () => (
 )
 
 const Tabs = TabNavigator({
-  Home: {
-    screen: History,
-  },
-  Dashboard: {
-    screen: AddEntry
-  }},
-  {
-    navigationOptions: {
-      header: null
+    Live:{
+      screen: Live
+    },
+    Home: {
+      screen: History
+    },
+    AddEntry: {
+      screen: AddEntry,
+      navigationOptions: {
+        tabBarLabel: 'Add entry',
+      }
+    },
+    }, {
+      navigationOptions: {
+        header: null
+      },
+      tabBarOptions: {
+        activeTintColor: white,
+        style: {
+          height: 56,
+          backgroundColor: purple,
+          shadowColor: 'rgba(0, 0, 0, 0.24)',
+          shadowOffset: {
+            width: 0,
+            height: 3
+          },
+          shadowRadius: 6,
+          shadowOpacity: 1
+        }
+      }
     }
-  }
   )
 
 const MainNavigator = StackNavigator({
@@ -46,6 +68,9 @@ const MainNavigator = StackNavigator({
 })
 
 export default class App extends React.Component {
+  componentDidMount () {
+    setLocalNotification()
+  }
   render() {
     return (
       <Provider store={createStore(reducer)} >
